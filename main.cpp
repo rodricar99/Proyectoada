@@ -1,52 +1,81 @@
-#include "librerias.h"
+#include <iostream>
+#include <vector>
+using namespace std;
 
-void imprimirMatriz(int** ma,int n,int m){
-  for(int i=0; i<n; i++){
-    for(int j=0; j<m; j++)
-      cout<<ma[i][j]<<" ";
-    cout<<endl;
-  }
-}
-
-void crear_matriz(int** ma,int n,int m){
-    for(int i=0; i<n; i++)
-        for(int j=0; j<m; j++)
-            cin>>ma[i][j]; 
-}
-
-
-int main(){
-    int n,m;
-    cout << "Ingrese el número de filas: ";
-    cin >> n;
-    cout << "Ingrese el número de columnas: ";
-    cin >> m;
-
-    while(n <1 && m >1000){
-        cout << "Ingrese el número de filas: ";
-        cin >> n;
-        cout << "Ingrese el número de columnas: ";
-        cin >> m;
+class Matriz_Especial{
+private:
+    vector<int> minimuns;
+    int **matriz;
+    int n;
+    int m;
+public:
+    Matriz_Especial(int **matriz_, int n_, int m_){
+        this->matriz = matriz_;
+        this->n = n_;
+        this->m = m_;
+        this->minimuns.resize(n_);
     }
 
-    int** matriz_especial = new int*[n];
-    for(int i=0; i<n; i++)
-         matriz_especial[i] = new int[m];
-    crear_matriz(matriz_especial,n,m);
+    int searchMinorValue(int** ma, int fila, int start, int end){
+        int pos = start;
+        int initial = ma[fila][start];
+        for(int i = start; i < end; i++){
+            if (ma[fila][i] < initial){
+                initial = ma[fila][i];
+                pos = i;
+            }
+        }
+        this->minimuns[fila] = pos + 1;
+        return pos;
+    }
 
-    int minimo = matriz_especial[0][0];
-
-    vector<int>array_de_min;
-    int indice;
-    for(int i=0;i<m;i++){
-          for(int j=0; j<m;j++){
-            if(minimo>= matriz_especial[0][j]){
-                minimo=matriz_especial[0][j];
-                indice=i;
+    void binaryMatrix(int** ma,int start_n,int end_n, int start_m, int end_m){
+        if (start_n < end_n){
+            int middle_n = start_n + (end_n - start_n)/2;
+            int pos = searchMinorValue(ma, middle_n, start_m, end_m);
+            binaryMatrix(ma, start_n, middle_n, start_m, pos + 1);
+            binaryMatrix(ma, middle_n + 1, end_n, pos, end_m);
         }
     }
-    array_de_min.push_back(indice);
+
+    void displayVector(){
+        for(int minimun : this->minimuns){
+            cout << minimun << " ";
+        }
     }
+
+};
+
+int** crear_matriz(int n, int m){
+    int** matriz_especial = new int*[n];
+    for(int i=0; i<n; i++)
+        matriz_especial[i] = new int[m];
+    return matriz_especial;
+}
+
+void ingresar_matriz(int** ma,int n,int m){
+    for(int i=0; i<n; i++)
+        for(int j=0; j<m; j++)
+            cin>>ma[i][j];
+}
+
+int main(){
+    int n, m;
+    cin >> n >> m;
+
+    while(n < 1 && m > 1000){
+        cin >> n >> m;
+    }
+
+    int **matriz_especial = crear_matriz(n, m);
+
+    ingresar_matriz(matriz_especial, n, m);
+
+    auto matriz = new Matriz_Especial(matriz_especial, n, m);
+
+    matriz->binaryMatrix(matriz_especial, 0, n, 0 , m);
+
+    matriz->displayVector();
 
     return 0;   
 }
