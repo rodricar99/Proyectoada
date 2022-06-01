@@ -1,9 +1,0 @@
-
-minimo=[][]
-compararcolumna=[][]
-Matriz[n][m]
-for n in array(fila):  //comparamos en la fila para hallar el menor
-    if Fila[n]<Fila[n+1]
-    ` binaryseachr(fila)
-``````min=binaryseachr(fila[][])
-
